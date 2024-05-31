@@ -9,7 +9,7 @@ export function createCard(element, deleteCard, likeCardFunction, openImage) {
 
   cardElement.querySelector('.card__title').textContent = element.name;
 
-  cardElement.addEventListener('click', openImage);
+  cardImage.addEventListener('click', openImage);
 
   const cardDelete = cardElement.querySelector('.card__delete-button');
   cardDelete.addEventListener('click', function () {deleteCard(cardElement)});

@@ -23,13 +23,11 @@ const popupImageText = popupImage.querySelector('.popup__caption');
 
 // Открытие картинки
 const openImage = (evt) => {
-    if (evt.target.classList.contains('card__image')) {
-        popupImageOpenImg.src = evt.target.src;
-        popupImageOpenImg.alt = evt.target.alt;
-        popupImageText.textContent = evt.target.alt;
+    popupImageOpenImg.src = evt.target.src;
+    popupImageOpenImg.alt = evt.target.alt;
+    popupImageText.textContent = evt.target.alt;
 
-        openPopup(popupImage);
-    }
+    openPopup(popupImage);
 }
 
 // Вывод карточек
