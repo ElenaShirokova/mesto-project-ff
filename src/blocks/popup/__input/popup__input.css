@@ -14,6 +14,14 @@
   margin-bottom: 0;
 }
 
+.form__input:invalid {
+  border-bottom: 1px solid red; /* красная рамка для некорректных данных */
+}
+
+.popup__input_type_error {
+  color: red;
+}
+
 @media screen and (max-width: 568px) {
   .popup__title {
     font-size: 12px;

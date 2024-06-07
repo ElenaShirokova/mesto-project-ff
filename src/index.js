@@ -1,8 +1,9 @@
 // Импорт файлов
 import './index.css';
-import { initialCards } from './scripts/cards.js';
 import { createCard, deleteCard, likeCardFunction } from './scripts/card.js';
 import { openPopup, closePopup } from './scripts/modals.js';
+import { getInitialCards, postCreateCard, getUserInfo } from './scripts/api.js';
+// import { objectsValidation, enableValidation } from './scripts/validation.js';
 
 // Переменные
 const placesList = document.querySelector('.places__list');
@@ -11,8 +12,9 @@ const popupNewCard = document.querySelector('.popup_type_new-card');
 const popupImage = document.querySelector('.popup_type_image');
 const inputNameProfile = document.querySelector('.popup__input_type_name');
 const inputJobProfile = document.querySelector('.popup__input_type_description');
-const profileEditTitle = document.querySelector('.profile__title');
-const profileEditDescription = document.querySelector('.profile__description');
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+const profileImage = document.querySelector('.profile__image');
 const formNewCard = document.forms.newPlace;
 const inputPlaceNameNewCard = document.querySelector('.popup__input_type_card-name');
 const inputUrlNewCard = document.querySelector('.popup__input_type_url');
@@ -21,20 +23,32 @@ const buttonAddNewCard = document.querySelector('.profile__add-button');
 const popupImageOpenImg = popupImage.querySelector('.popup__image');
 const popupImageText = popupImage.querySelector('.popup__caption');
 
-// Открытие картинки
-const openImage = (evt) => {
-    popupImageOpenImg.src = evt.target.src;
-    popupImageOpenImg.alt = evt.target.alt;
-    popupImageText.textContent = evt.target.alt;
 
-    openPopup(popupImage);
+// глобальная переменная для хранения id пользователя
+let myUserId
+
+// Вывод данных профиля
+function initialUser () {
+    getUserInfo()
+        .then(res => {
+            if (res.ok) {
+                return res.json();
+            }
+            return Promise.reject(`Ошибка: ${res.status}`);
+        })
+        .then((res) => {
+            console.log(res);
+            profileTitle.textContent = res.name;
+            profileDescription.textContent = res.about;
+            profileImage.style.backgroundImage = `url('<%=require('${res.avatar}')%>')`;
+            myUserId = res._id;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 }
 
-// Вывод карточек
-initialCards.forEach((item) => {
-    const card = createCard(item, deleteCard, likeCardFunction, openImage);
-    placesList.prepend(card);
-})
+initialUser();
 
 // Обработка формы редактирования профиля
 function handleFormProfileEditSubmit(evt) {
@@ -46,21 +60,81 @@ function handleFormProfileEditSubmit(evt) {
     closePopup(popupProfileEdit);
 }
 
+// Вывод карточек
+function initialCards() {
+    getInitialCards()
+        .then(res => {
+            if (res.ok) {
+                return res.json();
+            }
+            return Promise.reject(`Ошибка: ${res.status}`);
+        })
+        .then((res) => {
+            console.log(myUserId);
+            res.forEach((item) => {
+                let myCard
+                if (item.owner._id === myUserId) {
+                    myCard = true;
+                } else {
+                    myCard = false;
+                }
+                const cardObj = {
+                    name: item.name,
+                    link: item.link,
+                    myCardBool: myCard
+                };
+                const card = createCard(cardObj, deleteCard, likeCardFunction, openImage);
+                placesList.prepend(card);
+            });
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+}
+
+initialCards();
+
 // Обработка формы создания карточки
 function handleFormNewCardSubmit(evt) {
     evt.preventDefault();
-
-    const newCardItem = {
-        name: inputPlaceNameNewCard.value,
-        link: inputUrlNewCard.value
-    };
-
-    const newCard = createCard(newCardItem, deleteCard, likeCardFunction);
-    placesList.prepend(newCard);
-
+    const nameNewCard = inputPlaceNameNewCard.value;
+    const linkNewCard = inputUrlNewCard.value;
+    postCreateCard(nameNewCard, linkNewCard)
+        .then(res => {
+            if (res.ok) {
+                return res.json();
+            }
+            return Promise.reject(`Ошибка: ${res.status}`);
+        })
+        .then((res) => {
+            const cardObj = {
+                name: res.name,
+                link: res.link,
+                myCardBool: true
+            };
+            const card = createCard(cardObj, deleteCard, likeCardFunction, openImage);
+            placesList.prepend(card);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
     closePopup(popupNewCard);
     formNewCard.reset();
 }
+
+
+
+// Открытие картинки
+const openImage = (evt) => {
+    popupImageOpenImg.src = evt.target.src;
+    popupImageOpenImg.alt = evt.target.alt;
+    popupImageText.textContent = evt.target.alt;
+
+    openPopup(popupImage);
+}
+
+
+
 
 // Открытие форм
 buttonProfileEdit.addEventListener('click', function () {
@@ -95,3 +169,116 @@ popupImage.addEventListener('click', function (evt) {
 // Слушатели отправки форм
 popupProfileEdit.addEventListener('submit', handleFormProfileEditSubmit);
 popupNewCard.addEventListener('submit', handleFormNewCardSubmit);
+
+
+
+
+
+
+
+
+
+
+
+//  const objectsValidation = {
+//     formSelector: '.popup__form',
+//     inputSelector: '.popup__input',
+//     submitButtonSelector: '.popup__button',
+//     inactiveButtonClass: '.popup__button_disabled',
+//     inputErrorClass: '.popup__input_type_error',
+//     errorClass: '.popup__error_visible'
+//   };
+
+// const showInputError = (formElement, inputElement, errorMessage) => {
+//     const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+//     inputElement.classList.add(objectsValidation.inputErrorClass);
+//     console.log(errorElement);
+//     console.log(formElement.querySelector(`.${inputElement.id}-error`));
+//     errorElement.textContent = errorMessage;
+//     errorElement.classList.add(objectsValidation.errorClass);
+//   };
+
+// const hideInputError = (formElement, inputElement) => {
+//     const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+//     inputElement.classList.remove(objectsValidation.inputErrorClass);
+//     errorElement.classList.remove(objectsValidation.errorClass);
+//     errorElement.textContent = '';
+// };
+
+// const setEventListeners = (formElement) => {
+//     const inputList = Array.from(formElement.querySelectorAll(objectsValidation.inputSelector));
+//     inputList.forEach((inputElement) => {
+//         inputElement.addEventListener('input', function () {
+//             checkInputValidity(formElement, inputElement);
+//     });
+//     });
+//     const buttonElement = formElement.querySelector(objectsValidation.submitButtonSelector);
+//     toggleButtonState(inputList, buttonElement);
+
+//     inputList.forEach((inputElement) => {
+//     inputElement.addEventListener('input', () => {
+//       checkInputValidity(formElement, inputElement);
+
+//             // Вызовем toggleButtonState и передадим ей массив полей и кнопку
+//       toggleButtonState(inputList, buttonElement);
+//     });
+// });
+// };
+
+// const hasInvalidInput = (inputList) => {
+//     return inputList.some((inputElement) => {
+//     return !inputElement.validity.valid;
+// })
+// };
+
+// // const hasInvalidInput = (inputList) => {
+// //     const val = inputList.some((inputElement) => {
+// //       console.log(`${inputElement.name} : ${inputElement.validity.valid}`);
+// //       return !inputElement.validity.valid;
+// //     });
+// //     console.log(`hasInvalidInput : ${val}`);
+// //     return val;
+// //   };
+
+
+// const toggleButtonState = (inputList, buttonElement) => {
+//     // Если есть хотя бы один невалидный инпут
+//     if (hasInvalidInput(inputList)) {
+//       // сделай кнопку неактивной
+//         buttonElement.disabled = true;
+//         buttonElement.classList.add(objectsValidation.inactiveButtonClass);
+//     } else {
+//           // иначе сделай кнопку активной
+//         buttonElement.disabled = false;
+//         buttonElement.classList.remove(objectsValidation.inactiveButtonClass);
+//     }
+//   };
+
+//   const checkInputValidity = (formElement, inputElement) => {
+//     if (!inputElement.validity.valid) {
+//       if(inputElement.validity.patternMismatch){
+//         inputElement.setCustomValidity(inputElement.dataset.errorMessagePatternMissmatch);
+//       }
+//       showInputError(formElement, inputElement, inputElement.validationMessage);
+//     } else {
+//       hideInputError(formElement, inputElement);
+//     }
+//   };
+
+
+//  const enableValidation = () => {
+//     // Найдём все формы с указанным классом в DOM,
+//     // сделаем из них массив методом Array.from
+//     const formList = Array.from(document.querySelectorAll(objectsValidation.formSelector));
+
+
+//     // Переберём полученную коллекцию
+//     formList.forEach((formElement) => {
+//         formElement.addEventListener('submit', (evt) => {
+//           evt.preventDefault();
+//         });
+//         setEventListeners(formElement);
+//       });
+//   };
+
+enableValidation();

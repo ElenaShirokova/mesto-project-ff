@@ -1,3 +1,13 @@
+// создает разметку корзины для моих карточек
+function createDeleteButton () {
+  return '<button type="button" class="card__delete-button"></button>'
+}
+
+// вставляет разметку корзины в DOM
+function addDeleteButtonToDom(container, markup) {
+  container.insertAdjacentHTML('afterbegin', markup)
+}
+
 // Функция создания карточки
 export function createCard(element, deleteCard, likeCardFunction, openImage) {
   const cardTemplate = document.querySelector('#card-template').content;
@@ -11,14 +21,19 @@ export function createCard(element, deleteCard, likeCardFunction, openImage) {
 
   cardImage.addEventListener('click', openImage);
 
-  const cardDelete = cardElement.querySelector('.card__delete-button');
-  cardDelete.addEventListener('click', function () {deleteCard(cardElement)});
-
   const cardLikeButton = cardElement.querySelector('.card__like-button');
   cardLikeButton.addEventListener('click', likeCardFunction);
 
+  if (element.myCardBool) {
+    const cardDeleteButton = cardElement.querySelector('.container__delete-button');
+    addDeleteButtonToDom(cardDeleteButton, createDeleteButton());
+    const cardDelete = cardElement.querySelector('.card__delete-button');
+    cardDelete.addEventListener('click', function () {deleteCard(cardElement)});
+  }
+
   return cardElement;
 }
+
 
 // Функция удаления карточки
 export function deleteCard(card) {
