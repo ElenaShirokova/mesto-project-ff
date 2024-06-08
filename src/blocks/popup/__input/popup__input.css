@@ -14,7 +14,11 @@
   margin-bottom: 0;
 }
 
-.form__input:invalid {
+.popup__input:focus-visible {
+  outline: none;
+}
+
+.form__input-error {
   border-bottom: 1px solid red; /* красная рамка для некорректных данных */
 }
 

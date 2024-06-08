@@ -94,6 +94,9 @@ export function createCard(element, openImage) {
   const cardLikesCounter = cardElement.querySelector('.card__like-button-counter')
   cardLikesCounter.textContent = element.likes;
   const cardLikeButton = cardElement.querySelector('.card__like-button');
+  if (element.myLike) {
+    cardLikeButton.classList.add('card__like-button_is-active');
+  }
   cardLikeButton.addEventListener('click', function () {
     likeCardFunction(cardLikeButton, element.myCardId, cardLikesCounter);
   });

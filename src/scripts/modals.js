@@ -7,9 +7,18 @@ export function openPopup(popupElement) {
 
 // Функция закрытия попапа
 export function closePopup(popupElement) {
-    popupElement.classList.remove('popup_is-opened');
-    document.removeEventListener('keydown', keyHandler);
-    popupElement.removeEventListener('click', closePopupOverlay);
+  const errMess = popupElement.querySelectorAll('.popup__input_type_error');
+  errMess.forEach((item) => {
+    item.textContent = '';
+  });
+  const inputErr = popupElement.querySelectorAll('.popup__input');
+  inputErr.forEach((item) => {
+    item.classList.remove('form__input-error');
+  });
+
+  popupElement.classList.remove('popup_is-opened');
+  document.removeEventListener('keydown', keyHandler);
+  popupElement.removeEventListener('click', closePopupOverlay);
 }
 
 // Функция закрытия попапа через оверлей

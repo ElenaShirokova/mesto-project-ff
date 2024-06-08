@@ -49,8 +49,8 @@
           class="popup__input popup__input_type_image_url"
           placeholder="Ссылка на картинку"
           required>
-        <span class="card-url-input-error popup__input_type_error"></span>
-        <button type="submit" class="button popup__button">Сохранить</button>
+        <span class="input-edit-profile-url-error popup__input_type_error"></span>
+        <button type="submit" class="button popup__button" disabled>Сохранить</button>
       </form>
     </div>
   </div>
@@ -66,11 +66,11 @@
           class="popup__input popup__input_type_name"
           minlength="2"
           maxlength="40"
-          pattern="/[\wа-я0-9\-]/gi"
+          pattern="^[a-zA-Zа-яА-я\-\s]+$"
           data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
           placeholder="Имя"
           required>
-        <span class="profile-name-input-error popup__error_visible popup__input_type_error"></span>
+        <span class="input-edit-name-error popup__error_visible popup__input_type_error"></span>
         <input
           id="input-edit-description"
           type="text"
@@ -78,12 +78,12 @@
           class="popup__input popup__input_type_description"
           minlength="2"
           maxlength="200"
-          pattern="/[\wа-я0-9\-]/gi"
+          pattern="^[a-zA-Zа-яА-я\-\s]+$"
           data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
           placeholder="Занятие"
           required>
-        <span class="profile-description-input-error popup__input_type_error"></span>
-        <button type="submit" class="button popup__button popup__button_disabled">Сохранить</button>
+        <span class="input-edit-description-error popup__input_type_error"></span>
+        <button type="submit" class="button popup__button" disabled>Сохранить</button>
       </form>
     </div>
   </div>
@@ -99,11 +99,11 @@
           class="popup__input popup__input_type_card-name"
           minlength="2"
           maxlength="30"
-          pattern="/[\wа-я0-9\-]/gi"
+          pattern="^[a-zA-Zа-яА-я\-\s]+$"
           data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
           placeholder="Название"
           required>
-        <span class="card-name-input-error popup__input_type_error"></span>
+        <span class="input-card-name-error popup__input_type_error"></span>
         <input
           id="input-card-url"
           type="url"
@@ -111,8 +111,8 @@
           class="popup__input popup__input_type_url"
           placeholder="Ссылка на картинку"
           required>
-        <span class="card-url-input-error popup__input_type_error"></span>
-        <button type="submit" class="button popup__button">Сохранить</button>
+        <span class="input-card-url-error popup__input_type_error"></span>
+        <button type="submit" class="button popup__button" disabled>Сохранить</button>
       </form>
     </div>
   </div>
