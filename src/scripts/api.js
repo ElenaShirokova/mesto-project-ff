@@ -7,6 +7,7 @@ export const baseConfig = {
     }
 }
 
+
 // get-запрос на загрузку данных о пользователе
 export const getUserInfo = () => {
     return fetch(`${baseConfig.baseUrl}users/me`, {
@@ -15,28 +16,29 @@ export const getUserInfo = () => {
 }
 
 
-// // patch-запрос на редактирование данных о пользователе
-// export const patchUserInfo = (nameUserNew, aboutUserNew) => {
-//     return fetch(`${baseConfig.baseUrl}users/me`, {
-//         method: 'PATCH',
-//         hesders: baseConfig.headers,
-//         body: JSON.stringify({
-//             name: nameUserNew,
-//             about: aboutUserNew
-//         })
-//     })
-// }
+// patch-запрос на редактирование данных о пользователе
+export const patchUserInfo = (nameUserNew, aboutUserNew) => {
+    return fetch(`${baseConfig.baseUrl}users/me`, {
+        method: 'PATCH',
+        headers: baseConfig.headers,
+        body: JSON.stringify({
+            name: nameUserNew,
+            about: aboutUserNew
+        })
+    })
+}
 
-// // patch-запрос на обновление аватара пользователя
-// fetch(`${baseConfig.baseUrl}users/me/avatar`, {
-//     method: 'PATCH',
-//     hesders: baseConfig.headers,
-//     body: JSON.stringify({
-//         avatar: ''
-//     })
-// })
-//     .then(res => res.json())
-//     .then((res) => console.log(res))
+
+// patch-запрос на обновление аватара пользователя
+export const patchUserImage = (newUserImage) => {
+    return fetch(`${baseConfig.baseUrl}users/me/avatar`, {
+        method: 'PATCH',
+        headers: baseConfig.headers,
+        body: JSON.stringify({
+            avatar: newUserImage
+        })
+    })
+}
 
 
 // get-запрос на загрузку карточек
@@ -60,30 +62,28 @@ export const postCreateCard = (postName, postLink) => {
 }
 
 
-// // delete-запрос на удаление карточки
-// fetch(`${baseConfig.baseUrl}cards/cardID`, {
-//     method: 'DELETE',
-//     headers: baseConfig.headers
-// })
-//     .then(res => res.json())
-//     .then((res) => console.log(res))
+// delete-запрос на удаление карточки
+export const deleteMyCard = (cardId) => {
+    return fetch(`${baseConfig.baseUrl}cards/${cardId}`, {
+        method: 'DELETE',
+        headers: baseConfig.headers
+    })
+}
 
 
-// // put-запрос на лайк карточки
-// fetch(`${baseConfig.baseUrl}cards/likes/cardID`, {
-//     method: 'PUT',
-//     headers: baseConfig.headers
-// })
-//     .then(res => res.json())
-//     .then((res) => console.log(res))
+// put-запрос на лайк карточки
+export const putLikeCard = (cardId) => {
+    return fetch(`${baseConfig.baseUrl}cards/likes/${cardId}`, {
+        method: 'PUT',
+        headers: baseConfig.headers
+    })
+}
 
 
-// // delete-запрос на удаление лайкa карточки
-// fetch(`${baseConfig.baseUrl}cards/likes/cardID`, {
-//     method: 'DELETE',
-//     headers: baseConfig.headers
-// })
-//     .then(res => res.json())
-//     .then((res) => console.log(res))
-
-
+// delete-запрос на удаление лайкa карточки
+export const deleteLikeCard = (cardId) => {
+    return fetch(`${baseConfig.baseUrl}cards/likes/${cardId}`, {
+        method: 'DELETE',
+        headers: baseConfig.headers
+    })
+}

@@ -1,17 +1,19 @@
 // Импорт файлов
 import './index.css';
-import { createCard, deleteCard, likeCardFunction } from './scripts/card.js';
+import { createCard } from './scripts/card.js';
 import { openPopup, closePopup } from './scripts/modals.js';
-import { getInitialCards, postCreateCard, getUserInfo } from './scripts/api.js';
+import { getInitialCards, postCreateCard, getUserInfo, patchUserInfo, patchUserImage } from './scripts/api.js';
 // import { objectsValidation, enableValidation } from './scripts/validation.js';
 
 // Переменные
 const placesList = document.querySelector('.places__list');
+const popupProfileEditImage = document.querySelector('.popup_type_edit-image');
 const popupProfileEdit = document.querySelector('.popup_type_edit');
 const popupNewCard = document.querySelector('.popup_type_new-card');
 const popupImage = document.querySelector('.popup_type_image');
 const inputNameProfile = document.querySelector('.popup__input_type_name');
 const inputJobProfile = document.querySelector('.popup__input_type_description');
+const inputUrlNewUserImage = document.querySelector('.popup__input_type_image_url');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const profileImage = document.querySelector('.profile__image');
@@ -22,6 +24,7 @@ const buttonProfileEdit = document.querySelector('.profile__edit-button');
 const buttonAddNewCard = document.querySelector('.profile__add-button');
 const popupImageOpenImg = popupImage.querySelector('.popup__image');
 const popupImageText = popupImage.querySelector('.popup__caption');
+const buttonProfileEditImage = document.querySelector('.profile__image');
 
 
 // глобальная переменная для хранения id пользователя
@@ -37,10 +40,9 @@ function initialUser () {
             return Promise.reject(`Ошибка: ${res.status}`);
         })
         .then((res) => {
-            console.log(res);
             profileTitle.textContent = res.name;
             profileDescription.textContent = res.about;
-            profileImage.style.backgroundImage = `url('<%=require('${res.avatar}')%>')`;
+            profileImage.style.backgroundImage = `url('${res.avatar}')`;
             myUserId = res._id;
         })
         .catch((err) => {
@@ -53,12 +55,43 @@ initialUser();
 // Обработка формы редактирования профиля
 function handleFormProfileEditSubmit(evt) {
     evt.preventDefault();
-
-    profileEditTitle.textContent = inputNameProfile.value;
-    profileEditDescription.textContent = inputJobProfile.value;
+    patchUserInfo(inputNameProfile.value, inputJobProfile.value)
+        .then(res => {
+            if (res.ok) {
+                return res.json();
+            }
+            return Promise.reject(`Ошибка: ${res.status}`);
+        })
+        .then((res) => {
+            profileTitle.textContent = res.name;
+            profileDescription.textContent = res.about;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 
     closePopup(popupProfileEdit);
 }
+
+// Обработка формы обновления аватара пользователя
+function handleFormProfileImageEditSubmit(evt) {
+    evt.preventDefault();
+    patchUserImage(inputUrlNewUserImage.value)
+        .then(res => {
+            if (res.ok) {
+                return res.json();
+            }
+            return Promise.reject(`Ошибка: ${res.status}`);
+        })
+        .then((res) => {
+            profileImage.style.backgroundImage = `url('${res.avatar}')`;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+        closePopup(popupProfileEditImage);
+}
+
 
 // Вывод карточек
 function initialCards() {
@@ -70,7 +103,6 @@ function initialCards() {
             return Promise.reject(`Ошибка: ${res.status}`);
         })
         .then((res) => {
-            console.log(myUserId);
             res.forEach((item) => {
                 let myCard
                 if (item.owner._id === myUserId) {
@@ -81,10 +113,12 @@ function initialCards() {
                 const cardObj = {
                     name: item.name,
                     link: item.link,
-                    myCardBool: myCard
+                    myCardBool: myCard,
+                    myCardId: item._id,
+                    likes: item.likes.length
                 };
-                const card = createCard(cardObj, deleteCard, likeCardFunction, openImage);
-                placesList.prepend(card);
+                const card = createCard(cardObj, openImage);
+                placesList.append(card);
             });
         })
         .catch((err) => {
@@ -110,9 +144,11 @@ function handleFormNewCardSubmit(evt) {
             const cardObj = {
                 name: res.name,
                 link: res.link,
-                myCardBool: true
+                myCardBool: true,
+                myCardId: res._id,
+                likes: 0
             };
-            const card = createCard(cardObj, deleteCard, likeCardFunction, openImage);
+            const card = createCard(cardObj, openImage);
             placesList.prepend(card);
         })
         .catch((err) => {
@@ -121,7 +157,6 @@ function handleFormNewCardSubmit(evt) {
     closePopup(popupNewCard);
     formNewCard.reset();
 }
-
 
 
 // Открытие картинки
@@ -134,12 +169,14 @@ const openImage = (evt) => {
 }
 
 
-
-
 // Открытие форм
+buttonProfileEditImage.addEventListener('click', function () {
+    openPopup(popupProfileEditImage);
+})
+
 buttonProfileEdit.addEventListener('click', function () {
-    inputNameProfile.value = profileEditTitle.textContent;
-    inputJobProfile.value = profileEditDescription.textContent;
+    inputNameProfile.value = profileTitle.textContent;
+    inputJobProfile.value = profileDescription.textContent;
     openPopup(popupProfileEdit);
 })
 
@@ -148,6 +185,12 @@ buttonAddNewCard.addEventListener('click', function () {
 })
 
 // Закрытие форм
+popupProfileEditImage.addEventListener('click', function (evt) {
+    if (evt.target.classList.contains('popup__close')) {
+        closePopup(popupProfileEditImage);
+    }
+})
+
 popupProfileEdit.addEventListener('click', function (evt) {
     if (evt.target.classList.contains('popup__close')) {
         closePopup(popupProfileEdit);
@@ -168,6 +211,7 @@ popupImage.addEventListener('click', function (evt) {
 
 // Слушатели отправки форм
 popupProfileEdit.addEventListener('submit', handleFormProfileEditSubmit);
+popupProfileEditImage.addEventListener('submit', handleFormProfileImageEditSubmit);
 popupNewCard.addEventListener('submit', handleFormNewCardSubmit);
 
 
