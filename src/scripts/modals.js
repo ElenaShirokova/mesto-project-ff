@@ -1,23 +1,20 @@
+//базовые настройки селекторов работы форм
+export const popupSelectors = {
+    popupIsOpenedSelector: 'popup_is-opened',
+    popupInputSelector: '.popup__input'
+};
+
 // Функция открытия попапа
-export function openPopup(popupElement) {
-    popupElement.classList.add('popup_is-opened');
-    document.addEventListener('keydown', keyHandler);
+export function openPopup(popupElement, popupSelectors) {
+    popupElement.classList.add(popupSelectors.popupIsOpenedSelector);
+    document.addEventListener('keydown', closePopupKeyHandler);
     popupElement.addEventListener('click', closePopupOverlay);
 }
 
 // Функция закрытия попапа
-export function closePopup(popupElement) {
-  const errMess = popupElement.querySelectorAll('.popup__input_type_error');
-  errMess.forEach((item) => {
-    item.textContent = '';
-  });
-  const inputErr = popupElement.querySelectorAll('.popup__input');
-  inputErr.forEach((item) => {
-    item.classList.remove('form__input-error');
-  });
-
-  popupElement.classList.remove('popup_is-opened');
-  document.removeEventListener('keydown', keyHandler);
+export function closePopup(popupElement, popupSelectors) {
+  popupElement.classList.remove(popupSelectors.popupIsOpenedSelector);
+  document.removeEventListener('keydown', closePopupKeyHandler(popupSelectors));
   popupElement.removeEventListener('click', closePopupOverlay);
 }
 
@@ -29,9 +26,17 @@ function closePopupOverlay(evt) {
 }
 
 // Функция закрытия попапа через Esc
-function keyHandler(evt) {
+function closePopupKeyHandler(evt, popupSelectors) {
     if (evt.key === 'Escape') {
-        const popupObjOpen = document.querySelector('.popup_is-opened');
+        const popupObjOpen = document.querySelector(popupSelectors.popupIsOpenedSelector);
         closePopup(popupObjOpen);
     }
+}
+
+// Функция очистки полей ввода формы
+export function clearInput(popupElement, popupSelectors) {
+    const textInput = popupElement.querySelectorAll(popupSelectors.popupInputSelector);
+    textInput.forEach((item) => {
+        item.value = '';
+    });
 }

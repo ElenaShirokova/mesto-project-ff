@@ -1,15 +1,16 @@
-//базовые настройки валидации
-const objectsValidation = {
+//базовые настройки селекторов валидации
+export const objectsValidation = {
     formSelector: '.popup__form',
     inputSelector: '.popup__input',
     submitButtonSelector: '.popup__button',
     inactiveButtonClass: 'popup__button_disabled',
     inputErrorClass: 'form__input-error',
-    errorClass: 'popup__error_visible'
+    errorClass: 'popup__error_visible',
+    errorSelector: '.popup__input_type_error'
   };
 
 //показывает элемент ошибки
-const showInputError = (formElement, inputElement, errorMessage) => {
+const showInputError = (formElement, inputElement, errorMessage, objectsValidation) => {
     const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
     inputElement.classList.add(objectsValidation.inputErrorClass);
     errorElement.textContent = errorMessage;
@@ -17,7 +18,7 @@ const showInputError = (formElement, inputElement, errorMessage) => {
   };
 
   //скрывает элемент ошибки
-const hideInputError = (formElement, inputElement) => {
+const hideInputError = (formElement, inputElement, objectsValidation) => {
     const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
     inputElement.classList.remove(objectsValidation.inputErrorClass);
     errorElement.classList.remove(objectsValidation.errorClass);
@@ -25,16 +26,16 @@ const hideInputError = (formElement, inputElement) => {
 };
 
 //контролирует валидность заполнения поля формы
-const isValid = (formElement, inputElement) => {
+const isValid = (formElement, inputElement, objectsValidation) => {
   if (inputElement.validity.patternMismatch) {
     inputElement.setCustomValidity(inputElement.dataset.errorMessage);
   } else {
     inputElement.setCustomValidity("");
   }
   if (!inputElement.validity.valid) {
-    showInputError(formElement, inputElement, inputElement.validationMessage);
+    showInputError(formElement, inputElement, inputElement.validationMessage, objectsValidation);
   } else {
-    hideInputError(formElement, inputElement);
+    hideInputError(formElement, inputElement, objectsValidation);
   }
 };
 
@@ -46,7 +47,7 @@ const hasInvalidInput = (inputList) => {
 };
 
 //переключчает активность кнопки отправки
-const toggleButtonState = (inputList, buttonElement) => {
+const toggleButtonState = (inputList, buttonElement, objectsValidation) => {
     // Если есть хотя бы один невалидный инпут
     if (hasInvalidInput(inputList)) {
       // сделай кнопку неактивной
@@ -60,28 +61,37 @@ const toggleButtonState = (inputList, buttonElement) => {
   };
 
 //вешает слушатель на все поля ввода внутри формы
-const setEventListeners = (formElement) => {
+const setEventListeners = (formElement, objectsValidation) => {
   const inputList = Array.from(formElement.querySelectorAll(objectsValidation.inputSelector));
   const buttonElement = formElement.querySelector(objectsValidation.submitButtonSelector);
-  toggleButtonState(inputList, buttonElement);
+  toggleButtonState(inputList, buttonElement, objectsValidation);
   inputList.forEach((inputElement) => {
       inputElement.addEventListener('input', function () {
-          isValid(formElement, inputElement);
-          toggleButtonState(inputList, buttonElement);
+          isValid(formElement, inputElement, objectsValidation);
+          toggleButtonState(inputList, buttonElement, objectsValidation);
       });
   });
 };
 
 //добавляет обработчики всем формам
-export const enableValidation = () => {
+export const enableValidation = (objectsValidation) => {
     // Найдём все формы с указанным классом в DOM,
     // сделаем из них массив методом Array.from
     const formList = Array.from(document.querySelectorAll(objectsValidation.formSelector));
     // Переберём полученную коллекцию
     formList.forEach((formElement) => {
-        // formElement.addEventListener('submit', (evt) => {
-        //   evt.preventDefault();
-        // });
-        setEventListeners(formElement);
+        setEventListeners(formElement, objectsValidation);
       });
   };
+
+// очищает поля валидации в форме перед ее открытием
+export const clearVaidation = (popupElement, objectsValidation) => {
+    const errMess = popupElement.querySelectorAll(objectsValidation.errorSelector);
+    errMess.forEach((item) => {
+        item.textContent = '';
+    });
+    const inputErr = popupElement.querySelectorAll(objectsValidation.inputSelector);
+    inputErr.forEach((item) => {
+        item.classList.remove(objectsValidation.inputErrorClass);
+    });
+};
