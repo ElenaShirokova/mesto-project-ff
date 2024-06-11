@@ -14,7 +14,7 @@ export function openPopup(popupElement, popupSelectors) {
 // Функция закрытия попапа
 export function closePopup(popupElement, popupSelectors) {
   popupElement.classList.remove(popupSelectors.popupIsOpenedSelector);
-  document.removeEventListener('keydown', closePopupKeyHandler(popupSelectors));
+  document.removeEventListener('keydown', closePopupKeyHandler);
   popupElement.removeEventListener('click', closePopupOverlay);
 }
 
@@ -26,17 +26,11 @@ function closePopupOverlay(evt) {
 }
 
 // Функция закрытия попапа через Esc
-function closePopupKeyHandler(evt, popupSelectors) {
+function closePopupKeyHandler(evt) {
     if (evt.key === 'Escape') {
         const popupObjOpen = document.querySelector(popupSelectors.popupIsOpenedSelector);
         closePopup(popupObjOpen);
     }
 }
 
-// Функция очистки полей ввода формы
-export function clearInput(popupElement, popupSelectors) {
-    const textInput = popupElement.querySelectorAll(popupSelectors.popupInputSelector);
-    textInput.forEach((item) => {
-        item.value = '';
-    });
-}
+

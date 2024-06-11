@@ -94,4 +94,7 @@ export const clearVaidation = (popupElement, objectsValidation) => {
     inputErr.forEach((item) => {
         item.classList.remove(objectsValidation.inputErrorClass);
     });
+    const buttonElement = popupElement.querySelector(objectsValidation.submitButtonSelector);
+    buttonElement.disabled = true;
+    buttonElement.classList.add(objectsValidation.inactiveButtonClass);
 };

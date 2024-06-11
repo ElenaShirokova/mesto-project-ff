@@ -1,7 +1,7 @@
 // Импорт файлов
 import './index.css';
 import { createCard } from './scripts/card.js';
-import { popupSelectors, openPopup, closePopup, clearInput } from './scripts/modals.js';
+import { popupSelectors, openPopup, closePopup } from './scripts/modals.js';
 import { getInitialCards, postCreateCard, getUserInfo, patchUserInfo, patchUserImage } from './scripts/api.js';
 import { objectsValidation, enableValidation, clearVaidation } from './scripts/validation.js';
 import { checkResponse, searchMyLike, renderLoading } from './scripts/utils.js';
@@ -19,6 +19,7 @@ const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const profileImage = document.querySelector('.profile__image');
 const formNewCard = document.forms.newPlace;
+const formEditProfileImage = document.forms.editProfileImage;
 const inputPlaceNameNewCard = document.querySelector('.popup__input_type_card-name');
 const inputUrlNewCard = document.querySelector('.popup__input_type_url');
 const buttonProfileEdit = document.querySelector('.profile__edit-button');
@@ -142,7 +143,7 @@ const openImage = (evt) => {
 
 // Открытие форм
 buttonProfileEditImage.addEventListener('click', function () {
-    clearInput(popupProfileEditImage, popupSelectors);
+    formEditProfileImage.reset();
     clearVaidation(popupProfileEditImage, objectsValidation);
     openPopup(popupProfileEditImage, popupSelectors);
 })
@@ -155,7 +156,7 @@ buttonProfileEdit.addEventListener('click', function () {
 })
 
 buttonAddNewCard.addEventListener('click', function () {
-    clearInput(popupNewCard, popupSelectors);
+    formNewCard.reset();
     clearVaidation(popupNewCard, objectsValidation);
     openPopup(popupNewCard, popupSelectors);
 })
